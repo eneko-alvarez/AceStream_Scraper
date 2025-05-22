@@ -118,21 +118,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
 // Helper function to generate SXPF XML content
 function generateSxpfContent(links: { name: string, aceStreamId: string }[]) {
   // XML header
-  let xml = '<?xml version="1.0" encoding="utf-8"?>\n';
-  xml += '<playlist xmlns="http://xspf.org/ns/0/" xmlns:acestream="http://acestream.net/" version="1">\n';
-  xml += '  <title>AceStream Channels</title>\n';
-  xml += '  <trackList>\n';
+  let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+  xml += '<playlist xmlns="http://xspf.org/ns/0/" xmlns:vlc="http://www.videolan.org/vlc/playlist/ns/0/" version="1">\n';
+  xml += '      <title>Lista de reproducción</title>\n';
+  xml += '      <trackList>\n';
   
   // Add each channel as a track
-  links.forEach(link => {
-    xml += '    <track>\n';
-    xml += `      <title>${escapeXml(link.name)}</title>\n`;
-    xml += `      <location>acestream://${link.aceStreamId}</location>\n`;
-    xml += '    </track>\n';
+  links.forEach((link, index) => {
+    xml += '            <track>\n';
+    xml += `                    <location>acestream://${link.aceStreamId}</location>\n`;
+    xml += `                    <title>${escapeXml(link.name)}</title>\n`;
+    xml += '                    <extension application="http://www.videolan.org/vlc/playlist/0">\n';
+    xml += `                            <vlc:id>${index}</vlc:id>\n`;
+    xml += '                            <vlc:option>network-caching=1000</vlc:option>\n';
+    xml += '                    </extension>\n';
+    xml += '            </track>\n';
   });
   
-  // Close XML
-  xml += '  </trackList>\n';
+  // Close tracklist
+  xml += '      </trackList>\n';
+  
+  // Add VLC extension with item references
+  xml += '      <extension application="http://www.videolan.org/vlc/playlist/0">\n';
+  
+  // Reference each track by its ID
+  links.forEach((_, index) => {
+    xml += `                    <vlc:item tid="${index}"/>\n`;
+  });
+  
+  // Close extensions and playlist
+  xml += '      </extension>\n';
   xml += '</playlist>';
   
   return xml;

@@ -13,6 +13,7 @@ export default function Home() {
   const [errorMessage, setErrorMessage] = useState("");
   const [results, setResults] = useState<AceStreamLink[]>([]);
   const [sxpfContent, setSxpfContent] = useState<string>("");
+  const [selectedCompanies, setSelectedCompanies] = useState<string[]>([]);
   
   const sourceUrl = "https://ipfs.io/ipns/k51qzi5uqu5di00365631hrj6m22vsjudpbtw8qpfw6g08gf3lsqdn6e89anq5/";
   
@@ -23,20 +24,11 @@ export default function Home() {
       const response = await apiRequest("POST", "/api/scrape", { url: sourceUrl });
       return response.json();
     },
-    onSuccess: async (data) => {
+    onSuccess: (data) => {
       setResults(data.links);
-      setLoadingMessage("Generating SXPF format...");
-      
-      // Once we have the links, generate the SXPF content
-      try {
-        const sxpfResponse = await apiRequest("POST", "/api/generate-sxpf", { links: data.links });
-        const sxpfData = await sxpfResponse.json();
-        setSxpfContent(sxpfData.sxpfContent);
-        setScrapeStatus("success");
-      } catch (error) {
-        setScrapeStatus("error");
-        setErrorMessage("Failed to generate SXPF format: " + (error instanceof Error ? error.message : String(error)));
-      }
+      // Clear previous selections when new data arrives
+      setSelectedCompanies([]);
+      setScrapeStatus("success");
     },
     onError: (error) => {
       setScrapeStatus("error");
@@ -53,6 +45,35 @@ export default function Home() {
   const handleCancel = () => {
     scrapeMutation.reset();
     setScrapeStatus("idle");
+  };
+  
+  const generateSxpf = async () => {
+    // If no selected companies, use all results
+    // Otherwise filter by selected companies
+    const linksToUse = selectedCompanies.length === 0 
+      ? results 
+      : results.filter(result => 
+          selectedCompanies.some(company => 
+            result.name.toUpperCase().includes(company.toUpperCase())
+          )
+        );
+    
+    if (linksToUse.length === 0) {
+      return;
+    }
+    
+    try {
+      setLoadingMessage("Generating SXPF format...");
+      setScrapeStatus("loading");
+      
+      const sxpfResponse = await apiRequest("POST", "/api/generate-sxpf", { links: linksToUse });
+      const sxpfData = await sxpfResponse.json();
+      setSxpfContent(sxpfData.sxpfContent);
+      setScrapeStatus("success");
+    } catch (error) {
+      setScrapeStatus("error");
+      setErrorMessage("Failed to generate SXPF format: " + (error instanceof Error ? error.message : String(error)));
+    }
   };
   
   const handleDownload = () => {
@@ -145,12 +166,20 @@ export default function Home() {
           </div>
           
           {/* Results Display */}
-          <ResultsDisplay results={results} />
+          <ResultsDisplay 
+            results={results} 
+            selectedCompanies={selectedCompanies}
+            setSelectedCompanies={setSelectedCompanies}
+          />
           
           {/* Download Section */}
           <DownloadSection 
             isReadyToDownload={scrapeStatus === "success" && sxpfContent !== ""} 
-            onDownload={handleDownload} 
+            onDownload={handleDownload}
+            hasResults={results.length > 0}
+            onGenerateSxpf={generateSxpf}
+            selectedCompaniesCount={selectedCompanies.length}
+            totalChannelsCount={results.length}
           />
         </div>
         

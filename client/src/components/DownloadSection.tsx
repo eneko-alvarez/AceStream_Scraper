@@ -4,7 +4,7 @@ interface DownloadSectionProps {
   isReadyToDownload: boolean;
   onDownload: () => void;
   hasResults: boolean;
-  onGenerateSxpf: () => void;
+  onGenerateXspf: () => void;
   selectedCompaniesCount: number;
   totalChannelsCount: number;
 }

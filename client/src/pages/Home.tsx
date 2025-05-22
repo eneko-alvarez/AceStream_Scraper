@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Code, Download, X } from "lucide-react";
+import { Code, Download, X, ChevronDown, ChevronUp } from "lucide-react";
 import { StatusIndicator } from "@/components/StatusIndicator";
 import { ResultsDisplay } from "@/components/ResultsDisplay";
 import { DownloadSection } from "@/components/DownloadSection";
@@ -12,8 +12,9 @@ export default function Home() {
   const [loadingMessage, setLoadingMessage] = useState("Obtaining IDs...");
   const [errorMessage, setErrorMessage] = useState("");
   const [results, setResults] = useState<AceStreamLink[]>([]);
-  const [sxpfContent, setSxpfContent] = useState<string>("");
+  const [xspfContent, setXspfContent] = useState<string>("");
   const [selectedCompanies, setSelectedCompanies] = useState<string[]>([]);
+  const [operationDetailsExpanded, setOperationDetailsExpanded] = useState<boolean>(false);
   
   const sourceUrl = "https://ipfs.io/ipns/k51qzi5uqu5di00365631hrj6m22vsjudpbtw8qpfw6g08gf3lsqdn6e89anq5/";
   
@@ -47,7 +48,7 @@ export default function Home() {
     setScrapeStatus("idle");
   };
   
-  const generateSxpf = async () => {
+  const generateXspf = async () => {
     // If no selected companies, use all results
     // Otherwise filter by selected companies
     const linksToUse = selectedCompanies.length === 0 
@@ -63,30 +64,30 @@ export default function Home() {
     }
     
     try {
-      setLoadingMessage("Generating SXPF format...");
+      setLoadingMessage("Generating XSPF format...");
       setScrapeStatus("loading");
       
-      const sxpfResponse = await apiRequest("POST", "/api/generate-sxpf", { links: linksToUse });
-      const sxpfData = await sxpfResponse.json();
-      setSxpfContent(sxpfData.sxpfContent);
+      const xspfResponse = await apiRequest("POST", "/api/generate-xspf", { links: linksToUse });
+      const xspfData = await xspfResponse.json();
+      setXspfContent(xspfData.xspfContent);
       setScrapeStatus("success");
     } catch (error) {
       setScrapeStatus("error");
-      setErrorMessage("Failed to generate SXPF format: " + (error instanceof Error ? error.message : String(error)));
+      setErrorMessage("Failed to generate XSPF format: " + (error instanceof Error ? error.message : String(error)));
     }
   };
   
   const handleDownload = () => {
-    if (!sxpfContent) return;
+    if (!xspfContent) return;
     
-    // Create a Blob with the SXPF content
-    const blob = new Blob([sxpfContent], { type: "application/xml" });
+    // Create a Blob with the XSPF content
+    const blob = new Blob([xspfContent], { type: "application/xml" });
     
     // Create a download link
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "acestream_channels.sxpf";
+    a.download = "acestream_channels.xspf";
     
     // Trigger download
     document.body.appendChild(a);
@@ -113,28 +114,40 @@ export default function Home() {
         <div className="p-6">
           {/* Operation Details */}
           <div className="mb-6">
-            <h2 className="text-lg font-medium mb-2 text-gray-800">Operation Details</h2>
-            <div className="bg-gray-50 p-4 rounded-md text-sm">
-              <p className="mb-2">
-                <span className="font-medium">Source URL:</span>{" "}
-                <a 
-                  href={sourceUrl} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="text-blue-600 hover:underline break-all"
-                >
-                  {sourceUrl}
-                </a>
-              </p>
-              <p className="mb-2">
-                <span className="font-medium">Target Variable:</span>{" "}
-                <code className="bg-gray-200 px-1 py-0.5 rounded">linksData</code>
-              </p>
-              <p>
-                <span className="font-medium">Output Format:</span>{" "}
-                <code className="bg-gray-200 px-1 py-0.5 rounded">.sxpf</code> configuration file
-              </p>
-            </div>
+            <button
+              onClick={() => setOperationDetailsExpanded(!operationDetailsExpanded)}
+              className="w-full flex items-center justify-between text-lg font-medium mb-2 text-gray-800 hover:text-gray-600 transition-colors duration-200"
+            >
+              <span>Operation Details</span>
+              {operationDetailsExpanded ? (
+                <ChevronUp className="h-5 w-5" />
+              ) : (
+                <ChevronDown className="h-5 w-5" />
+              )}
+            </button>
+            {operationDetailsExpanded && (
+              <div className="bg-gray-50 p-4 rounded-md text-sm">
+                <p className="mb-2">
+                  <span className="font-medium">Source URL:</span>{" "}
+                  <a 
+                    href={sourceUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-blue-600 hover:underline break-all"
+                  >
+                    {sourceUrl}
+                  </a>
+                </p>
+                <p className="mb-2">
+                  <span className="font-medium">Target Variable:</span>{" "}
+                  <code className="bg-gray-200 px-1 py-0.5 rounded">linksData</code>
+                </p>
+                <p>
+                  <span className="font-medium">Output Format:</span>{" "}
+                  <code className="bg-gray-200 px-1 py-0.5 rounded">.xspf</code> configuration file
+                </p>
+              </div>
+            )}
           </div>
           
           {/* Status Indicator */}
@@ -152,7 +165,7 @@ export default function Home() {
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-md transition-colors duration-200 flex justify-center items-center"
               >
                 <Download className="h-5 w-5 mr-2" />
-                Start Scraping Process
+                Search Channels
               </button>
             ) : (
               <button 
@@ -174,10 +187,10 @@ export default function Home() {
           
           {/* Download Section */}
           <DownloadSection 
-            isReadyToDownload={scrapeStatus === "success" && sxpfContent !== ""} 
+            isReadyToDownload={scrapeStatus === "success" && xspfContent !== ""} 
             onDownload={handleDownload}
             hasResults={results.length > 0}
-            onGenerateSxpf={generateSxpf}
+            onGenerateXspf={generateXspf}
             selectedCompaniesCount={selectedCompanies.length}
             totalChannelsCount={results.length}
           />

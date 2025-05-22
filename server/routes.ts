@@ -118,15 +118,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
 // Helper function to generate SXPF XML content
 function generateSxpfContent(links: { name: string, aceStreamId: string }[]) {
   // XML header
-  let xml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+  let xml = '<?xml version="1.0" encoding="utf-8"?>\n';
   xml += '<playlist xmlns="http://xspf.org/ns/0/" xmlns:vlc="http://www.videolan.org/vlc/playlist/ns/0/" version="1">\n';
-  xml += '      <title>Lista de reproducción</title>\n';
-  xml += '      <trackList>\n';
+  xml += '  <title>AceStream Channels</title>\n';
+  xml += '  <trackList>\n';
   
   // Add each channel as a track
   links.forEach((link, index) => {
-    xml += '            <track>\n';
-    xml += `                    <location>acestream://${link.aceStreamId}</location>\n`;
+    xml += '    <track>\n';
+    xml += `                    <location>${link.aceStreamId}</location>\n`;
     xml += `                    <title>${escapeXml(link.name)}</title>\n`;
     xml += '                    <extension application="http://www.videolan.org/vlc/playlist/0">\n';
     xml += `                            <vlc:id>${index}</vlc:id>\n`;
@@ -136,10 +136,10 @@ function generateSxpfContent(links: { name: string, aceStreamId: string }[]) {
   });
   
   // Close tracklist
-  xml += '      </trackList>\n';
+  xml += '  </trackList>\n';
   
   // Add VLC extension with item references
-  xml += '      <extension application="http://www.videolan.org/vlc/playlist/0">\n';
+  xml += '  <extension application="http://www.videolan.org/vlc/playlist/0">\n';
   
   // Reference each track by its ID
   links.forEach((_, index) => {

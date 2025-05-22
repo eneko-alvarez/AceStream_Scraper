@@ -20,28 +20,61 @@ export function ResultsDisplay({ results, selectedCompanies, setSelectedCompanie
     results.forEach(result => {
       // Extract company name - usually before words like "HD", "FHD", "SD", etc.
       const name = result.name.split('-->')[0].trim(); // Remove anything after arrow
-      const parts = name.split(' ');
       
-      // Try to extract company name by looking at the first few words
-      // This is a simplified approach - might need refinement based on actual data
-      const possibleCompanyWords = parts.slice(0, Math.min(3, parts.length));
+      // Try to identify common channel groups like M+ LALIGA, ESPN, DAZN, etc.
+      // Removing numbers to group related channels together (e.g., M+ LALIGA and M+ LALIGA 2)
       
-      // Join first few words as the company name
-      // For ESPN, DAZN, etc. it will capture just the company name
-      // For "Movistar LaLiga" it will capture "Movistar LaLiga"
+      // First try common channel prefixes
+      const commonPrefixes = [
+        "M+", "MOVISTAR+", "MOVISTAR", "DAZN", "ESPN", "FOX", 
+        "BEIN", "SKY", "HBO", "SPORT", "EUROSPORT", "CNN",
+        "BBC", "ITV", "CANAL", "PREMIER", "LIGA", "SERIE"
+      ];
+      
       let companyName = "";
       
-      for (let i = 0; i < possibleCompanyWords.length; i++) {
-        const word = possibleCompanyWords[i];
-        // Skip common suffixes that aren't part of company name
-        if (["HD", "FHD", "SD", "4K", "UHD"].includes(word)) continue;
+      // Look for common prefixes
+      for (const prefix of commonPrefixes) {
+        if (name.toUpperCase().includes(prefix)) {
+          // Find the prefix position
+          const prefixPos = name.toUpperCase().indexOf(prefix);
+          // Get text after prefix (excluding numbers)
+          let afterPrefix = name.substring(prefixPos + prefix.length).trim();
+          
+          // Extract words until we hit a number or special suffix
+          const afterParts = afterPrefix.split(' ');
+          let extractedParts = [];
+          
+          for (const part of afterParts) {
+            // Skip if it's a number or common suffix
+            if (/^\d+$/.test(part) || ["HD", "FHD", "SD", "4K", "UHD"].includes(part.toUpperCase())) {
+              continue;
+            }
+            extractedParts.push(part);
+            // Stop after 2 words to keep company names concise
+            if (extractedParts.length >= 2) break;
+          }
+          
+          companyName = prefix + (extractedParts.length > 0 ? " " + extractedParts.join(" ") : "");
+          break;
+        }
+      }
+      
+      // If no common prefix was found, use a more general approach
+      if (!companyName) {
+        const parts = name.split(' ');
+        // Remove numbers and common suffixes
+        const filteredParts = parts.filter(part => 
+          !(/^\d+$/.test(part)) && 
+          !["HD", "FHD", "SD", "4K", "UHD"].includes(part.toUpperCase())
+        );
         
-        // Add word to company name
-        companyName += (companyName ? " " : "") + word;
+        // Take first 1-2 words as company name
+        companyName = filteredParts.slice(0, Math.min(2, filteredParts.length)).join(" ");
       }
       
       if (companyName) {
-        companies.add(companyName);
+        companies.add(companyName.trim());
       }
     });
     

@@ -24,6 +24,6 @@ export type InsertAceStreamLink = z.infer<typeof insertAceStreamLinkSchema>;
 export type AceStreamLink = typeof aceStreamLinks.$inferSelect;
 
 // SXPF data structure
-export type SxpfData = {
+export type XspfData = {
   links: AceStreamLink[];
 };

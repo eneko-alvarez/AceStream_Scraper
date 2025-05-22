@@ -86,8 +86,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
   
-  // Generate SXPF format from the provided links
-  app.post("/api/generate-sxpf", async (req, res) => {
+  // Generate XSPF format from the provided links
+  app.post("/api/generate-xspf", async (req, res) => {
     try {
       const schema = z.object({
         links: z.array(z.object({
@@ -98,14 +98,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const { links } = schema.parse(req.body);
       
-      // Create the SXPF XML format
-      const sxpfContent = generateSxpfContent(links);
+      // Remove duplicate AceStream IDs
+      const uniqueLinks = links.filter((link, index, self) => 
+        index === self.findIndex(l => l.aceStreamId === link.aceStreamId)
+      );
       
-      return res.json({ sxpfContent });
+      // Create the XSPF XML format
+      const xspfContent = generateXspfContent(uniqueLinks);
+      
+      return res.json({ xspfContent });
     } catch (e) {
-      console.error("Error generating SXPF format:", e);
+      console.error("Error generating XSPF format:", e);
       return res.status(500).json({ 
-        message: "An error occurred while generating the SXPF format",
+        message: "An error occurred while generating the XSPF format",
         error: e instanceof Error ? e.message : String(e)
       });
     }
@@ -115,8 +120,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
   return httpServer;
 }
 
-// Helper function to generate SXPF XML content
-function generateSxpfContent(links: { name: string, aceStreamId: string }[]) {
+// Helper function to generate XSPF XML content
+function generateXspfContent(links: { name: string, aceStreamId: string }[]) {
   // XML header
   let xml = '<?xml version="1.0" encoding="utf-8"?>\n';
   xml += '<playlist xmlns="http://xspf.org/ns/0/" xmlns:vlc="http://www.videolan.org/vlc/playlist/ns/0/" version="1">\n';

@@ -7,8 +7,8 @@ export interface ScrapeResponse {
   links: AceStreamLink[];
 }
 
-export interface GenerateSxpfResponse {
-  sxpfContent: string;
+export interface GenerateXspfResponse {
+  xspfContent: string;
 }
 
 export type ScrapeStatus = 'idle' | 'loading' | 'success' | 'error';

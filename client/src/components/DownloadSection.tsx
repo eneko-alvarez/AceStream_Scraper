@@ -13,7 +13,7 @@ export function DownloadSection({
   isReadyToDownload, 
   onDownload, 
   hasResults, 
-  onGenerateSxpf,
+  onGenerateXspf,
   selectedCompaniesCount,
   totalChannelsCount
 }: DownloadSectionProps) {
@@ -35,17 +35,17 @@ export function DownloadSection({
           </p>
           
           <button 
-            onClick={onGenerateSxpf}
+            onClick={onGenerateXspf}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-md transition-colors duration-200 flex justify-center items-center"
           >
             <Filter className="h-5 w-5 mr-2" />
-            Generate .sxpf with Selected Channels
+            generate downloadable file
           </button>
         </>
       ) : (
         <>
           <p className="text-gray-600 mb-4">
-            Your data has been successfully processed and is ready to be downloaded as an .sxpf configuration file.
+            Your data has been successfully processed and is ready to be downloaded as an .xspf configuration file.
           </p>
           
           <button 
@@ -53,7 +53,7 @@ export function DownloadSection({
             className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-md transition-colors duration-200 flex justify-center items-center"
           >
             <Download className="h-5 w-5 mr-2" />
-            Download .sxpf Configuration
+            Download .xspf Configuration
           </button>
         </>
       )}

@@ -198,7 +198,7 @@ export default function Home() {
         
         {/* Footer */}
         <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 text-sm text-gray-500 rounded-b-lg">
-          <p>This tool extracts AceStream channel information and converts it to .sxpf format for easy configuration.</p>
+          <p>This tool extracts AceStream channel information and converts it to .xspf format for easy configuration.</p>
         </div>
       </div>
     </div>

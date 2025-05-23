@@ -113,17 +113,17 @@ export function ResultsDisplay({ results, selectedCompanies, setSelectedCompanie
   return (
     <div className="results-container mb-6">
       <h2 className="text-lg font-medium mb-2 text-gray-800 flex items-center justify-between">
-        <span>Extracted Data</span>
+        <span>Canales obtenidos</span>
         <div className="flex items-center gap-2">
           <span className="text-sm font-normal text-gray-500">
-            {filteredResults.length} of {results.length} items
+            {filteredResults.length} of {results.length} items selected
           </span>
           <button 
             onClick={() => setShowFilters(!showFilters)}
             className="flex items-center text-xs px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded-md text-gray-700"
           >
             <Filter className="h-3 w-3 mr-1" />
-            Filter
+            FILTRAR POR PLATAFORMA
           </button>
         </div>
       </h2>
@@ -132,12 +132,12 @@ export function ResultsDisplay({ results, selectedCompanies, setSelectedCompanie
       {showFilters && (
         <div className="mb-4 border border-gray-200 rounded-md p-4 bg-gray-50">
           <div className="flex justify-between items-center mb-2">
-            <h3 className="text-sm font-medium text-gray-700">Filter by Company</h3>
+            <h3 className="text-sm font-medium text-gray-700">Selecciona los deseados</h3>
             <button 
               onClick={toggleAllCompanies}
               className="text-xs text-blue-600 hover:text-blue-800"
             >
-              {selectedCompanies.length === companyNames.length ? "Deselect All" : "Select All"}
+              {selectedCompanies.length === companyNames.length ? "Deselecciona todo" : "Selecciona todos"}
             </button>
           </div>
           
@@ -166,8 +166,8 @@ export function ResultsDisplay({ results, selectedCompanies, setSelectedCompanie
       <div className="border border-gray-200 rounded-md overflow-hidden">
         <div className="bg-gray-50 px-4 py-2 border-b border-gray-200 grid grid-cols-12 text-sm font-medium text-gray-600">
           <div className="col-span-1">#</div>
-          <div className="col-span-7">Channel Name</div>
-          <div className="col-span-4">AceStream ID</div>
+          <div className="col-span-7">Canal</div>
+          {/* <div className="col-span-4">AceStream ID</div> */}
         </div>
         
         <div className="max-h-60 overflow-y-auto">
@@ -175,12 +175,12 @@ export function ResultsDisplay({ results, selectedCompanies, setSelectedCompanie
             <div key={index} className="grid grid-cols-12 px-4 py-2 border-b border-gray-100 text-sm hover:bg-gray-50">
               <div className="col-span-1 text-gray-500">{index + 1}</div>
               <div className="col-span-7 font-medium text-gray-800">{result.name}</div>
-              <div 
+              {/*<div 
                 className="col-span-4 font-mono text-xs bg-gray-100 p-1 rounded overflow-hidden text-gray-700 truncate" 
                 title={result.aceStreamId}
               >
                 {result.aceStreamId}
-              </div>
+              </div>*/}
             </div>
           ))}
           

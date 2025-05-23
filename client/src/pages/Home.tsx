@@ -87,7 +87,7 @@ export default function Home() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "acestream_channels.xspf";
+    a.download = "canales.xspf";
     
     // Trigger download
     document.body.appendChild(a);
@@ -105,9 +105,9 @@ export default function Home() {
         <div className="px-6 py-5 border-b border-gray-200">
           <h1 className="text-2xl font-bold text-gray-800 flex items-center">
             <Code className="h-6 w-6 mr-2 text-blue-600" />
-            AceStream ID Scraper
+            Buscador de Canales AceStream
           </h1>
-          <p className="text-gray-600 mt-1">Extract channel names and IDs from AceStream links</p>
+          <p className="text-gray-600 mt-1">Obten una lista de reproducción con canales AceStream actuales</p>
         </div>
         
         {/* Main Content */}
@@ -118,12 +118,14 @@ export default function Home() {
               onClick={() => setOperationDetailsExpanded(!operationDetailsExpanded)}
               className="w-full flex items-center justify-between text-lg font-medium mb-2 text-gray-800 hover:text-gray-600 transition-colors duration-200"
             >
+              {/*            COMENTADO EL BOTON PARA VER SOURCES
               <span>Operation Details</span>
               {operationDetailsExpanded ? (
                 <ChevronUp className="h-5 w-5" />
               ) : (
                 <ChevronDown className="h-5 w-5" />
               )}
+              */}
             </button>
             {operationDetailsExpanded && (
               <div className="bg-gray-50 p-4 rounded-md text-sm">
@@ -165,7 +167,7 @@ export default function Home() {
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-md transition-colors duration-200 flex justify-center items-center"
               >
                 <Download className="h-5 w-5 mr-2" />
-                Search Channels
+                Buscar Canales
               </button>
             ) : (
               <button 
@@ -198,7 +200,7 @@ export default function Home() {
         
         {/* Footer */}
         <div className="px-6 py-4 bg-gray-50 border-t border-gray-200 text-sm text-gray-500 rounded-b-lg">
-          <p>This tool extracts AceStream channel information and converts it to .xspf format for easy configuration.</p>
+          <p>This tool extracts AceStream channel information and converts it to .xspf format for easy configuration. Non AceStream affiliated! This page only searches and transforms data from third party apps. Y eso.</p>
         </div>
       </div>
     </div>

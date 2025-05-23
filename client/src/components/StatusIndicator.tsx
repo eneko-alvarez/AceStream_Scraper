@@ -10,13 +10,13 @@ interface StatusIndicatorProps {
 export function StatusIndicator({ status, loadingMessage, errorMessage }: StatusIndicatorProps) {
   return (
     <div className="mb-6">
-      <h2 className="text-lg font-medium mb-2 text-gray-800">Current Status</h2>
+      <h2 className="text-lg font-medium mb-2 text-gray-800">Estado Actual</h2>
       <div className="status-container">
         {/* Idle state */}
         {status === 'idle' && (
           <div className="bg-gray-50 rounded-md p-4 flex items-center">
             <span className="mr-3 text-gray-500">⏳</span>
-            <span className="text-gray-600">Ready to start scraping process</span>
+            <span className="text-gray-600">Tamo preparaos para buscar, cuando quieras :)</span>
           </div>
         )}
         
@@ -32,7 +32,7 @@ export function StatusIndicator({ status, loadingMessage, errorMessage }: Status
         {status === 'success' && (
           <div className="bg-green-50 rounded-md p-4 flex items-center">
             <CheckCircle className="h-5 w-5 mr-3 text-green-600" />
-            <span className="text-green-800">Data successfully extracted and processed!</span>
+            <span className="text-green-800">Lo tenemos pa!</span>
           </div>
         )}
         

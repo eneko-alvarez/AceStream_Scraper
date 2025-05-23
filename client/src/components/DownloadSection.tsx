@@ -28,10 +28,10 @@ export function DownloadSection({
         <>
           <p className="text-gray-600 mb-4">
             {selectedCompaniesCount > 0 ? (
-              <>You have selected channels from <span className="font-medium">{selectedCompaniesCount}</span> companies.</>
+              <>Has seleccionado <span className="font-medium">{selectedCompaniesCount}</span> plataforma.</>
             ) : (
-              <>All <span className="font-medium">{totalChannelsCount}</span> channels will be included in the export.</>
-            )} Use the filter buttons above to customize your selection.
+              <>Todos los <span className="font-medium">{totalChannelsCount}</span> canales van a ser descargados.</>
+            )} Usa el boton de filtrar si quieres cambiar esto antes de descargar.
           </p>
           
           <button 
@@ -39,13 +39,13 @@ export function DownloadSection({
             className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-4 rounded-md transition-colors duration-200 flex justify-center items-center"
           >
             <Filter className="h-5 w-5 mr-2" />
-            generate downloadable file
+            Generar Descarga
           </button>
         </>
       ) : (
         <>
           <p className="text-gray-600 mb-4">
-            Your data has been successfully processed and is ready to be downloaded as an .xspf configuration file.
+            <br></br>
           </p>
           
           <button 
@@ -53,7 +53,7 @@ export function DownloadSection({
             className="w-full bg-green-600 hover:bg-green-700 text-white font-medium py-3 px-4 rounded-md transition-colors duration-200 flex justify-center items-center"
           >
             <Download className="h-5 w-5 mr-2" />
-            Download .xspf Configuration
+            Descargar playlist
           </button>
         </>
       )}

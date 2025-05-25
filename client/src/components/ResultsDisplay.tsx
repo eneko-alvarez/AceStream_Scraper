@@ -10,20 +10,40 @@ interface ResultsDisplayProps {
 
 export function ResultsDisplay({ results, selectedCompanies, setSelectedCompanies }: ResultsDisplayProps) {
   if (!results.length) return null;
-  
+
   const [showFilters, setShowFilters] = useState(false);
-  
+  const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
+  const [noNewEra, setNoNewEra] = useState(true); // Nuevo estado para el checkbox
+
   // Extract unique company names from the results
   const companyNames = useMemo(() => {
     const companies = new Set<string>();
-    
+    const commonPrefixes = [
+      "MOVISTAR+", "MOVISTAR", "DAZN", "ESPN", "FOX", 
+      "BEIN", "SKY", "HBO", "SPORT", "EUROSPORT", "CNN",
+      "BBC", "ITV", "PREMIER", "LIGA", "SERIE",
+      "UFC", "F1", "NBA", "TENNIS",
+    ];
+
     results.forEach(result => {
-      // Extract company name - usually before words like "HD", "FHD", "SD", etc.
-      const name = result.name.split('-->')[0].trim(); // Remove anything after arrow
-      
+      const name = result.name.split('-->')[0].trim();
+      let companyName = "";
+
+      for (const prefix of commonPrefixes) {
+        if (name.toUpperCase().includes(prefix)) {
+          companyName = prefix;
+          break;
+        }
+      }
+
+      if (companyName) {
+        companies.add(companyName);
+      }
+
+      /*
+      // --- Lógica anterior para extraer nombres más detallados ---
       // Try to identify common channel groups like M+ LALIGA, ESPN, DAZN, etc.
       // Removing numbers to group related channels together (e.g., M+ LALIGA and M+ LALIGA 2)
-      
       // First try common channel prefixes
       const commonPrefixes = [
         "M+", "MOVISTAR+", "MOVISTAR", "DAZN", "ESPN", "FOX", 
@@ -76,21 +96,35 @@ export function ResultsDisplay({ results, selectedCompanies, setSelectedCompanie
       if (companyName) {
         companies.add(companyName.trim());
       }
+      // --- Fin lógica anterior ---
+      */
     });
-    
+
     return Array.from(companies).sort();
   }, [results]);
+
   
-  // Filter results based on selected companies
+  
+  // Filter results based on selected companies and "no new era"
   const filteredResults = useMemo(() => {
-    if (!selectedCompanies.length) return results; // Show all if none selected
-    
-    return results.filter(result => {
-      return selectedCompanies.some(company => 
-        result.name.toUpperCase().includes(company.toUpperCase())
+    let filtered = results;
+
+    if (selectedCompanies.length) {
+      filtered = filtered.filter(result =>
+        selectedCompanies.some(company =>
+          result.name.toUpperCase().includes(company.toUpperCase())
+        )
       );
-    });
-  }, [results, selectedCompanies]);
+    }
+
+    if (noNewEra) {
+      filtered = filtered.filter(result =>
+        !result.name.trim().toUpperCase().endsWith('--> NEW ERA')
+      );
+    }
+
+    return filtered;
+  }, [results, selectedCompanies, noNewEra]);
   
   // Toggle company selection
   const toggleCompany = (company: string) => {
@@ -108,6 +142,13 @@ export function ResultsDisplay({ results, selectedCompanies, setSelectedCompanie
     } else {
       setSelectedCompanies([...companyNames]);
     }
+  };
+
+  // Copiar AceStream ID al portapapeles
+  const handleCopy = (aceStreamId: string, index: number) => {
+    navigator.clipboard.writeText(aceStreamId);
+    setCopiedIndex(index);
+    setTimeout(() => setCopiedIndex(null), 1200);
   };
 
   return (
@@ -159,6 +200,19 @@ export function ResultsDisplay({ results, selectedCompanies, setSelectedCompanie
               </button>
             ))}
           </div>
+          {/* Checkbox "no new era" */}
+          <div className="mt-4 flex items-center">
+            <input
+              id="no-new-era"
+              type="checkbox"
+              checked={noNewEra}
+              onChange={e => setNoNewEra(e.target.checked)}
+              className="mr-2"
+            />
+            <label htmlFor="no-new-era" className="text-xs text-gray-700 cursor-pointer">
+              NO NEW ERA
+            </label>
+          </div>
         </div>
       )}
       
@@ -166,21 +220,25 @@ export function ResultsDisplay({ results, selectedCompanies, setSelectedCompanie
       <div className="border border-gray-200 rounded-md overflow-hidden">
         <div className="bg-gray-50 px-4 py-2 border-b border-gray-200 grid grid-cols-12 text-sm font-medium text-gray-600">
           <div className="col-span-1">#</div>
-          <div className="col-span-7">Canal</div>
-          {/* <div className="col-span-4">AceStream ID</div> */}
+          <div className="col-span-11">Canal</div>
         </div>
         
         <div className="max-h-60 overflow-y-auto">
           {filteredResults.map((result, index) => (
             <div key={index} className="grid grid-cols-12 px-4 py-2 border-b border-gray-100 text-sm hover:bg-gray-50">
               <div className="col-span-1 text-gray-500">{index + 1}</div>
-              <div className="col-span-7 font-medium text-gray-800">{result.name}</div>
-              {/*<div 
-                className="col-span-4 font-mono text-xs bg-gray-100 p-1 rounded overflow-hidden text-gray-700 truncate" 
-                title={result.aceStreamId}
+              <div
+                className="col-span-11 font-medium text-gray-800 cursor-pointer relative select-none"
+                title="Haz click para copiar el AceStream ID"
+                onClick={() => handleCopy(result.aceStreamId, index)}
               >
-                {result.aceStreamId}
-              </div>*/}
+                {result.name}
+                {copiedIndex === index && (
+                  <span className="absolute left-2/3 top-1/2 -translate-y-1/2 bg-green-100 text-green-800 text-xs px-2 py-0.5 rounded ml-2 shadow">
+                    Copiado!
+                  </span>
+                )}
+              </div>
             </div>
           ))}
           

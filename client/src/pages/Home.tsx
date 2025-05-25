@@ -105,9 +105,9 @@ export default function Home() {
         <div className="px-6 py-5 border-b border-gray-200">
           <h1 className="text-2xl font-bold text-gray-800 flex items-center">
             <Code className="h-6 w-6 mr-2 text-blue-600" />
-            Buscador de Canales AceStream
+            Buscador de Canales - AceStream
           </h1>
-          <p className="text-gray-600 mt-1">Obten una lista de reproducción con canales AceStream actuales</p>
+          <p className="text-gray-600 mt-1">Obten una lista de reproducción con canales AceStream actualizados a diario</p>
         </div>
         
         {/* Main Content */}

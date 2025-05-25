@@ -31,7 +31,7 @@ export function DownloadSection({
               <>Has seleccionado <span className="font-medium">{selectedCompaniesCount}</span> plataforma.</>
             ) : (
               <>Todos los <span className="font-medium">{totalChannelsCount}</span> canales van a ser descargados.</>
-            )} Usa el boton de filtrar si quieres cambiar esto antes de descargar.
+            )} Usa el boton de filtrar si quieres cambiar esto antes de descargar la playlist.
           </p>
           
           <button 
